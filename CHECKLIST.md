@@ -55,7 +55,9 @@ This checklist outlines the steps required to transform the forked Archon reposi
         ```
         *   Ensure function handles potential errors and returns a list of dictionaries.
         *   **(Self-Correction):** Also consider retrieving credential information from `n8n_*_credentials` tables if the user query implies needing specific authentication nodes. The query logic might need to adapt based on keywords.
-    *   [ ] **Update Agent Calls:** Modify agents using documentation retrieval (Primary Coder, Tools Refiner, Advisor) to:
+    *   [X] **Clean up related tools:** Remove obsolete RAG/vector-based tools (e.g., in `agent_tools.py`).
+    *   [ ] **Update import statements:** Modify imports in agents/other files previously using `vector_db_utils` or removed tools.
+    *   [ ] **Update Agent Calls:** Modify agents (e.g., Primary Coder, Refiners) to use `retrieve_n8n_context` instead of old RAG tools.
         *   Extract relevant `keywords` from the user message/context.
         *   Call `retrieve_n8n_context(supabase_client, keywords)`.
         *   Adapt `@tool` definitions as needed.
@@ -70,14 +72,14 @@ This checklist outlines the steps required to transform the forked Archon reposi
 
 *   [ ] **Rewrite Agent System Prompts:**
     *   Review and rewrite system prompts in all `*.py` files within `archon/agents/` and `archon/agents/refiners/`.
-    *   [ ] **General:** Update role/goal to "n8n Workflow Engineer" / "generating n8n workflow JSON".
-    *   [ ] **Context Usage:** Instruct agents how to use retrieved context ( `name`, `tools`, `ts_content`, `json_data` from node/credential tables) for generation.
-    *   [ ] **Primary Coder:** Enforce outputting *only* valid n8n JSON structure. Remove Python file generation instructions.
-    *   [ ] **Reasoner:** Focus planning on n8n workflow structure (triggers, nodes, data flow, credentials).
-    *   [ ] **Refiners:**
-        *   `Tools Refiner`: Refocus on refining n8n node parameters/connections in JSON based on `ts_content`.
-        *   `Prompt Refiner`: Adapt for refining user request or generated JSON comments/clarity.
-        *   `Agent Refiner`: Decide if needed. If not, remove the agent file.
+    *   [X] **General:** Update role/goal to "n8n Workflow Engineer" / "generating n8n workflow JSON".
+    *   [X] **Context Usage:** Instruct agents how to use retrieved context ( `name`, `tools`, `ts_content`, `json_data` from node/credential tables) for generation.
+    *   [X] **Primary Coder:** Enforce outputting *only* valid n8n JSON structure. Remove Python file generation instructions.
+    *   [X] **Reasoner:** Focus planning on n8n workflow structure (triggers, nodes, data flow, credentials).
+    *   [X] **Refiners:**
+        *  [X] `Tools Refiner`: Refocus on refining n8n node parameters/connections in JSON based on `ts_content`.
+        *  [X]`Prompt Refiner`: Adapt for refining user request or generated JSON comments/clarity.
+        *  [X]`Agent Refiner`: Decide if needed. If not, remove the agent file.
 *   [ ] **Adapt LangGraph Workflow (`archon/archon_graph.py`):**
     *   [ ] Update `State` definition for `retrieved_context` (list of dictionaries).
     *   [ ] Remove transitions for `Agent Refiner` if it was removed.

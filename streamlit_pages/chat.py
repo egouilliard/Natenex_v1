@@ -3,6 +3,7 @@ import streamlit as st
 import uuid
 import sys
 import os
+import json
 
 # Add the current directory to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -39,9 +40,9 @@ async def run_agent_with_streaming(user_input: str):
             yield msg
 
 async def chat_tab():
-    """Display the chat interface for talking to Archon"""
-    st.write("Describe to me an AI agent you want to build and I'll code it for you with Pydantic AI.")
-    st.write("Example: Build me an AI agent that can search the web with the Brave API.")
+    """Display the chat interface for generating n8n workflows"""
+    st.write("Describe the n8n workflow you want to build, and I'll generate the JSON for you.")
+    st.write("Example: Create an n8n workflow triggered by a webhook that takes a customer email, looks up the customer in Stripe, and then sends a confirmation email via SendGrid.")
 
     # Initialize chat history in session state if not present
     if "messages" not in st.session_state:
@@ -60,7 +61,7 @@ async def chat_tab():
                 st.markdown(message["content"])    
 
     # Chat input for the user
-    user_input = st.chat_input("What do you want to build today?")
+    user_input = st.chat_input("Describe the n8n workflow you want to build...")
 
     if user_input:
         # We append a new request to the conversation explicitly
@@ -76,11 +77,22 @@ async def chat_tab():
             message_placeholder = st.empty()  # Placeholder for updating the message
             
             # Add a spinner while loading
-            with st.spinner("Archon is thinking..."):
+            with st.spinner("Natenex is generating the workflow..."):
                 # Run the async generator to fetch responses
                 async for chunk in run_agent_with_streaming(user_input):
-                    response_content += chunk
-                    # Update the placeholder with the current response content
-                    message_placeholder.markdown(response_content)
+                    # Handle different chunk types (dictionary for JSON, string for text)
+                    if isinstance(chunk, dict):
+                        # Pretty print the JSON adding it to the stream
+                        current_json_str = json.dumps(chunk, indent=2)
+                        response_content = f"```json\n{current_json_str}\n```" # Format as JSON block
+                        message_placeholder.markdown(response_content)
+                    elif isinstance(chunk, str):
+                        # Append string chunks normally
+                        response_content += chunk
+                        message_placeholder.markdown(response_content)
+                    else:
+                        # Handle unexpected chunk types if necessary
+                        pass # Or log a warning
         
+        # Store final message (might be JSON or text)
         st.session_state.messages.append({"type": "ai", "content": response_content})

@@ -93,10 +93,10 @@ def environment_tab():
     
     # Environment variables section
     st.subheader(f"Environment Variables for Profile: {current_profile}")
-    st.write("- Configure your environment variables for Archon. These settings will be saved and used for future sessions.")
+    st.write("- Configure your environment variables for Natenex.These settings will be saved and used for future sessions.")
     st.write("- NOTE: Press 'enter' to save after inputting a variable, otherwise click the 'save' button at the bottom.")
     st.write("- HELP: Hover over the '?' icon on the right for each environment variable for help/examples.")
-    st.warning("⚠️ If your agent service for MCP is already running, you'll need to restart it after changing environment variables.")
+    st.warning("⚠️ If your MCP server is already running, you'll need to restart it after changing environment variables.")
 
     # Get current profile's environment variables
     profile_env_vars = get_profile_env_vars()
@@ -223,9 +223,9 @@ def environment_tab():
             updated_values["LLM_API_KEY"] = "NOT_REQUIRED"
         
         # PRIMARY_MODEL
-        primary_model_help = "The LLM you want to use for the primary agent/coder\n\n" + \
-                            "Example: gpt-4o-mini\n\n" + \
-                            "Example: qwen2.5:14b-instruct-8k"
+        primary_model_help = "The LLM for the primary coder (generates n8n JSON)\n\n" + \
+                             "Example: gpt-4o-mini\n\n" + \
+                             "Example: google/gemini-pro"
         
         primary_model = st.text_input(
             "PRIMARY_MODEL:",
@@ -236,9 +236,9 @@ def environment_tab():
         updated_values["PRIMARY_MODEL"] = primary_model
         
         # REASONER_MODEL
-        reasoner_model_help = "The LLM you want to use for the reasoner\n\n" + \
-                             "Example: o3-mini\n\n" + \
-                             "Example: deepseek-r1:7b-8k"
+        reasoner_model_help = "The LLM for the reasoner (plans the n8n workflow)\n\n" + \
+                              "Example: claude-3-haiku-20240307\n\n" + \
+                              "Example: google/gemini-pro"
         
         reasoner_model = st.text_input(
             "REASONER_MODEL:",
@@ -248,75 +248,86 @@ def environment_tab():
         )
         updated_values["REASONER_MODEL"] = reasoner_model
         
+        advisor_model_help = "The LLM for the advisor (provides n8n examples/guidance)\n\n" + \
+                             "Example: gpt-4o-mini\n\n" + \
+                             "Example: google/gemini-pro"
+        advisor_model = st.text_input(
+            "ADVISOR_MODEL:",
+            value=profile_env_vars.get("ADVISOR_MODEL", ""),
+            help=advisor_model_help,
+            key="input_ADVISOR_MODEL"
+        )
+        updated_values["ADVISOR_MODEL"] = advisor_model
+        
         st.markdown("---")
         
         # 2. Embedding Models Section - Settings
-        st.subheader("Embedding Settings")
+        # st.subheader("Embedding Settings")
         
         # EMBEDDING_BASE_URL
-        embedding_base_url_help = "Base URL for your embedding provider:\n\n" + \
-                                 "OpenAI: https://api.openai.com/v1\n\n" + \
-                                 "Ollama: http://localhost:11434/v1"
+        # embedding_base_url_help = "Base URL for your embedding provider:\n\n" + \
+        #                          "OpenAI: https://api.openai.com/v1\n\n" + \
+        #                          "Ollama: http://localhost:11434/v1"
         
-        # Get current EMBEDDING_BASE_URL or use default for selected provider
-        current_embedding_base_url = profile_env_vars.get("EMBEDDING_BASE_URL", embedding_default_urls.get(selected_embedding_provider, ""))
+        # # Get current EMBEDDING_BASE_URL or use default for selected provider
+        # current_embedding_base_url = profile_env_vars.get("EMBEDDING_BASE_URL", embedding_default_urls.get(selected_embedding_provider, ""))
         
-        # If provider changed or EMBEDDING_BASE_URL is empty, use the default
-        if not current_embedding_base_url or profile_env_vars.get("EMBEDDING_PROVIDER", "") != selected_embedding_provider:
-            current_embedding_base_url = embedding_default_urls.get(selected_embedding_provider, "")
+        # # If provider changed or EMBEDDING_BASE_URL is empty, use the default
+        # if not current_embedding_base_url or profile_env_vars.get("EMBEDDING_PROVIDER", "") != selected_embedding_provider:
+            # current_embedding_base_url = embedding_default_urls.get(selected_embedding_provider, "")
         
-        embedding_base_url = st.text_input(
-            "EMBEDDING_BASE_URL:",
-            value=current_embedding_base_url,
-            help=embedding_base_url_help,
-            key="input_EMBEDDING_BASE_URL"
-        )
-        updated_values["EMBEDDING_BASE_URL"] = embedding_base_url
+        # embedding_base_url = st.text_input(
+            # "EMBEDDING_BASE_URL:",
+            # value=current_embedding_base_url,
+            # help=embedding_base_url_help,
+            # key="input_EMBEDDING_BASE_URL"
+        # )
+        # updated_values["EMBEDDING_BASE_URL"] = embedding_base_url
         
-        # EMBEDDING_API_KEY
-        embedding_api_key_help = "API key for your embedding provider:\n\n" + \
-                                "For OpenAI: https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key\n\n" + \
-                                "For Ollama, no need to set this unless you specifically configured an API key"
+        # # EMBEDDING_API_KEY
+        # embedding_api_key_help = "API key for your embedding provider:\n\n" + \
+        #                         "For OpenAI: https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key\n\n" + \
+        #                         "For Ollama, no need to set this unless you specifically configured an API key"
         
-        # Get current EMBEDDING_API_KEY or set default for Ollama
-        current_embedding_api_key = profile_env_vars.get("EMBEDDING_API_KEY", "")
+        # # Get current EMBEDDING_API_KEY or set default for Ollama
+        # current_embedding_api_key = profile_env_vars.get("EMBEDDING_API_KEY", "")
         
-        # If provider is Ollama and EMBEDDING_API_KEY is empty or provider changed, set to NOT_REQUIRED
-        if selected_embedding_provider == "Ollama" and (not current_embedding_api_key or profile_env_vars.get("EMBEDDING_PROVIDER", "") != selected_embedding_provider):
-            current_embedding_api_key = "NOT_REQUIRED"
+        # # If provider is Ollama and EMBEDDING_API_KEY is empty or provider changed, set to NOT_REQUIRED
+        # if selected_embedding_provider == "Ollama" and (not current_embedding_api_key or profile_env_vars.get("EMBEDDING_PROVIDER", "") != selected_embedding_provider):
+            # current_embedding_api_key = "NOT_REQUIRED"
         
-        # If there's already a value, show asterisks in the placeholder
-        placeholder = "Set but hidden" if current_embedding_api_key else ""
-        embedding_api_key = st.text_input(
-            "EMBEDDING_API_KEY:",
-            type="password",
-            help=embedding_api_key_help,
-            key="input_EMBEDDING_API_KEY",
-            placeholder=placeholder
-        )
-        # Only update if user entered something (to avoid overwriting with empty string)
-        if embedding_api_key:
-            updated_values["EMBEDDING_API_KEY"] = embedding_api_key
-        elif selected_embedding_provider == "Ollama" and (not current_embedding_api_key or current_embedding_api_key == "NOT_REQUIRED"):
-            updated_values["EMBEDDING_API_KEY"] = "NOT_REQUIRED"
+        # # If there's already a value, show asterisks in the placeholder
+        # placeholder = "Set but hidden" if current_embedding_api_key else ""
+        # embedding_api_key = st.text_input(
+            # "EMBEDDING_API_KEY:",
+            # type="password",
+            # help=embedding_api_key_help,
+            # key="input_EMBEDDING_API_KEY",
+            # placeholder=placeholder
+        # )
+        # # Only update if user entered something (to avoid overwriting with empty string)
+        # if embedding_api_key:
+            # updated_values["EMBEDDING_API_KEY"] = embedding_api_key
+        # elif selected_embedding_provider == "Ollama" and (not current_embedding_api_key or current_embedding_api_key == "NOT_REQUIRED"):
+            # updated_values["EMBEDDING_API_KEY"] = "NOT_REQUIRED"
         
-        # EMBEDDING_MODEL
-        embedding_model_help = "Embedding model you want to use\n\n" + \
-                              "Example for Ollama: nomic-embed-text\n\n" + \
-                              "Example for OpenAI: text-embedding-3-small"
+        # # EMBEDDING_MODEL
+        # embedding_model_help = "Embedding model you want to use\n\n" + \
+        #                           "Example for Ollama: nomic-embed-text\n\n" + \
+        #                           "Example for OpenAI: text-embedding-3-small"
         
-        embedding_model = st.text_input(
-            "EMBEDDING_MODEL:",
-            value=profile_env_vars.get("EMBEDDING_MODEL", ""),
-            help=embedding_model_help,
-            key="input_EMBEDDING_MODEL"
-        )
-        updated_values["EMBEDDING_MODEL"] = embedding_model
+        # embedding_model = st.text_input(
+            # "EMBEDDING_MODEL:",
+            # value=profile_env_vars.get("EMBEDDING_MODEL", ""),
+            # help=embedding_model_help,
+            # key="input_EMBEDDING_MODEL"
+        # )
+        # updated_values["EMBEDDING_MODEL"] = embedding_model
         
         st.markdown("---")
         
         # 3. Database Section
-        st.header("3. Database")
+        st.header("Supabase Database Settings")
         
         # SUPABASE_URL
         supabase_url_help = "Get your SUPABASE_URL from the API section of your Supabase project settings -\nhttps://supabase.com/dashboard/project/<your project ID>/settings/api"

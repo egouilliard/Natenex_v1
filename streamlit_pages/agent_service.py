@@ -11,9 +11,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.utils import reload_archon_graph
 
 def agent_service_tab():
-    """Display the agent service interface for managing the graph service"""
+    """Display the agent service interface for managing the Natenex graph service (for MCP)"""
     st.header("MCP Agent Service")
-    st.write("Start, restart, and monitor the Archon agent service for MCP.")
+    st.write("Start, restart, and monitor the Natenex agent service required for MCP integration.")
     
     # Initialize session state variables if they don't exist
     if "service_process" not in st.session_state:
@@ -146,9 +146,9 @@ def agent_service_tab():
                 threading.Thread(target=read_output, args=(process.stderr, st.session_state.output_queue), daemon=True).start()
                 
                 # Add startup message
-                st.session_state.output_queue.put(f"[{time.strftime('%H:%M:%S')}] Agent service started\n")
+                st.session_state.output_queue.put(f"[{time.strftime('%H:%M:%S')}] Natenex agent service started\n")
                 
-                st.success("Agent service started successfully!")
+                st.success("Natenex agent service started successfully!")
                 st.rerun()
                 
             except Exception as e:
@@ -167,8 +167,8 @@ def agent_service_tab():
                     st.session_state.service_process.kill()
                 
                 st.session_state.service_running = False
-                st.session_state.output_queue.put(f"[{time.strftime('%H:%M:%S')}] Agent service stopped\n")
-                st.success("Agent service stopped successfully!")
+                st.session_state.output_queue.put(f"[{time.strftime('%H:%M:%S')}] Natenex agent service stopped\n")
+                st.success("Natenex agent service stopped successfully!")
                 st.rerun()
                 
             except Exception as e:
@@ -208,7 +208,7 @@ def agent_service_tab():
         
         # Use a text area for scrollable output
         st.text_area(
-            label="Realtime Logs from Archon Service",
+            label="Realtime Logs from Natenex Service",
             value=output_text,
             height=output_height,
             disabled=True,

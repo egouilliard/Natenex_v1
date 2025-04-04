@@ -30,17 +30,17 @@ This checklist outlines the steps required to transform the forked Archon reposi
 
 ## Phase 2: Data Handling Refactor (Core Changes)
 
-*   [ ] **Remove Documentation Crawler:**
+*   [X] **Remove Documentation Crawler:**
     *   [X] Delete `archon/crawl_pydantic_ai_docs.py`.
     *   [X] Delete `streamlit_pages/documentation.py`.
-    *   [ ] In `streamlit_ui.py`, remove the "Documentation" tab definition.
-    *   [ ] In `streamlit_pages/intro.py`, remove "Step 3: Documentation Crawling" expander section and renumber subsequent steps.
-    *   [ ] Update `create_new_tab_button` calls in `intro.py` if needed.
+    *   [X] In `streamlit_ui.py`, remove the "Documentation" tab definition.
+    *   [X] In `streamlit_pages/intro.py`, remove "Step 3: Documentation Crawling" expander section and renumber subsequent steps.
+    *   [X] Update `create_new_tab_button` calls in `intro.py` if needed.
 *   [ ] **Adapt Supabase Interaction (`archon/utils/vector_db_utils.py` -> `archon/utils/supabase_retriever.py`):**
-    *   [ ] Rename the file to `supabase_retriever.py`.
+    *   [X] Rename the file to `supabase_retriever.py`.
     *   [ ] Update all import statements in other files referencing the old name.
-    *   [ ] Remove functions related to vector search, embeddings, etc.
-    *   [ ] **Create `retrieve_n8n_context` function:**
+    *   [X] Remove functions related to vector search, embeddings, etc.
+    *   [X] **Create `retrieve_n8n_context` function:**
         *   Define `async def retrieve_n8n_context(supabase_client: Client, keywords: List[str], limit: int = 10) -> List[Dict]:`.
         *   Implement logic to construct and execute SQL queries against the relevant `n8n_*_nodes` tables using the `keywords`.
         *   **Query Strategy:** Focus searches on `n8n_internal_nodes` and `n8n_external_nodes`. Use `ILIKE ANY` on `name` and potentially `tools` (if relevant) and `ts_content` columns. Consider combining results from both tables or prioritizing based on keywords. Return relevant columns (`name`, `tools`, `ts_content`, `json_data`).
@@ -62,9 +62,9 @@ This checklist outlines the steps required to transform the forked Archon reposi
 *   [ ] **Update Database Schema Info Files:**
     *   [ ] Delete `utils/site_pages_ollama.sql` (and similar).
     *   [ ] Clear `utils/site_pages.sql` and replace with comments describing the *required* Supabase tables and columns ( `n8n_internal_nodes`, `n8n_external_nodes`, `n8n_internal_credentials`, `n8n_external_credentials` with their respective columns), explicitly stating no vector index is needed.
-*   [ ] **Update Database UI (`streamlit_pages/database.py`):**
-    *   [ ] Remove UI elements for embedding dimensions, vector indexes/functions.
-    *   [ ] Change UI text/buttons to focus on verifying Supabase connection and checking for the existence of the four required `n8n_*` tables.
+*   [X] **Update Database UI (`streamlit_pages/database.py`):**
+    *   [X] Remove UI elements for embedding dimensions, vector indexes/functions.
+    *   [X] Change UI text/buttons to focus on verifying Supabase connection and checking for the existence of the four required `n8n_*` tables.
 
 ## Phase 3: Core Logic and Agent Prompts (LLM Guidance)
 
@@ -88,10 +88,10 @@ This checklist outlines the steps required to transform the forked Archon reposi
 *   [ ] **Handle JSON Output in UI (`streamlit_pages/chat.py`):**
     *   [ ] Ensure final workflow output is rendered using `st.json()`.
 *   [ ] **UI Text & Branding Replacements:**
-    *   [ ] Find/replace "Archon" -> "Natenex".
-    *   [ ] Find/replace "Pydantic AI" -> "n8n".
-    *   [ ] Find/replace "Agent" (product) -> "Workflow".
-    *   [ ] Find/replace "Python code" (output) -> "JSON" / "workflow JSON".
+    *   [X] Find/replace "Archon" -> "Natenex".
+    *   [X] Find/replace "Pydantic AI" -> "n8n".
+    *   [X] Find/replace "Agent" (product) -> "Workflow".
+    *   [X] Find/replace "Python code" (output) -> "JSON" / "workflow JSON".
     *   [ ] Replace `public/Archon.png` with a Natenex logo (update `st.image` path if needed).
 *   [ ] **Populate Example Library:**
     *   [ ] Create `agent-resources/examples/n8n_workflows/`.

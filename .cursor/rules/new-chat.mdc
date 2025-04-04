@@ -1,0 +1,38 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+name: Activate Natenex venv and check project status
+description: Activates the Python 3 venv, ensures dependencies are up-to-date, and reminds user to check project checklist on new chat.
+when:
+  newChat: true
+then:
+  - type: runTerminalCommand
+    command: echo '⚡ Activating Natenex Python 3 environment...'
+    description: Notify user
+  - type: runTerminalCommand
+    command: source venv/bin/activate
+    description: Activate venv (Unix/macOS)
+  - type: runTerminalCommand
+    command: >-
+      .\venv\Scripts\activate
+    description: Activate venv (Windows - will fail harmlessly on non-Windows)
+  - type: runTerminalCommand
+    command: python3 -m pip install -r requirements.txt
+    description: Install/update dependencies
+  - type: runTerminalCommand
+    command: echo '✅ Natenex environment ready.'
+    description: Notify user environment is ready
+  - type: runTerminalCommand
+    command: >-
+      echo "\n📋 Checking project status from CHECKLIST.md..."
+    description: Notify user about checklist check
+  - type: runTerminalCommand
+    # This command looks for lines starting with '*   [ ] ' which marks incomplete checklist items
+    command: >-
+      grep -E '^\s*\*   \[ \] ' CHECKLIST.md || echo "   -> No incomplete items found or CHECKLIST.md missing/empty."
+    description: Display incomplete checklist items
+  - type: runTerminalCommand
+    command: echo "\n🚀 Ready to continue working on Natenex! Please review the checklist above."
+    description: Final readiness message

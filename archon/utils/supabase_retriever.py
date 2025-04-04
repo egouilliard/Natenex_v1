@@ -3,7 +3,6 @@ from typing import List, Dict, Any, Optional
 from supabase import Client, create_client
 import sys
 import os
-from utils.utils import get_env_var # Assuming get_env_var is in utils.utils
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.utils import get_env_var # Assuming get_env_var is in utils.utils
